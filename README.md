@@ -6,6 +6,8 @@
 
 [Investigación Abierta](https://www.youtube.com/user/juanleongomez) es un canal de YouTube donde a veces comparto videos y tutoriales acerca de métodos y buenas prácticas de investigación, estadística y ciencia abierta, así como algunos programas útiles de código abierto.
 
+https://user-images.githubusercontent.com/45215832/115624454-46317900-a2c0-11eb-897b-b925b3aff3c7.mp4
+
 Este repositorio contiene materiales de apoyo para algunos videos (en particular, scripts de R o documentos en RMarkdown).
 
 # Acerca de mí
