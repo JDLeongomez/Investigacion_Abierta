@@ -46,6 +46,7 @@ for (i in 1:20) {
     geom_point(data = dat[sample(nrow(dat), 10),], color = "red", alpha = 0.5) + 
     geom_smooth(data = dat[sample(nrow(dat), 10),], method = "lm", color = "red", fill = "red", fullrange = TRUE) +
     labs(title = "n = 10") +
+    theme(plot.title = element_text(color="red")) +
     ggsave(paste("./n10/n10-", i, ".png", sep=""), width=4, height=4, dpi=200)
 }
 ### Crear GIF
@@ -67,6 +68,7 @@ for (i in 1:20) {
     geom_point(data = dat[sample(nrow(dat), 100),], color = "red", alpha = 0.5) + 
     geom_smooth(data = dat[sample(nrow(dat), 100),], method = "lm", color = "red", fill = "red", fullrange = TRUE) +
     labs(title = "n = 100") +
+    theme(plot.title = element_text(color="red")) +
     ggsave(paste("./n100/n100-", i, ".png", sep=""), width=4, height=4, dpi=200)
 }
 ### Crear GIF
@@ -88,6 +90,7 @@ for (i in 1:20) {
     geom_point(data = dat[sample(nrow(dat), 1000),], color = "red", alpha = 0.5) + 
     geom_smooth(data = dat[sample(nrow(dat), 1000),], method = "lm", color = "red", fill = "red", fullrange = TRUE) +
     labs(title = "n = 1000") +
+    theme(plot.title = element_text(color="red")) +
     ggsave(paste("./n1000/n1000-", i, ".png", sep=""), width=4, height=4, dpi=200)
 }
 ### Crear GIF
