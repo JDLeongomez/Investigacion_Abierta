@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="460" src="https://github.com/JDLeongomez/Investigacion_Abierta/blob/main/Logo-IA-c%C3%ADrculo.png">
+  <img width="230" src="https://github.com/JDLeongomez/Investigacion_Abierta/blob/main/Logo-IA-c%C3%ADrculo.png">
 </p>
 
 # [Investigación Abierta](https://www.youtube.com/user/juanleongomez)
