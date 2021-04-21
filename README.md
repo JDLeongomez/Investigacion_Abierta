@@ -8,6 +8,8 @@
 
 https://user-images.githubusercontent.com/45215832/115624454-46317900-a2c0-11eb-897b-b925b3aff3c7.mp4
 
+**Motion Designer:** Juan Paris ([Instagram](https://www.instagram.com/juansparis/))
+
 ## Materiales de apoyo
 
 Este repositorio contiene materiales de apoyo para algunos videos (en particular, scripts de R o documentos en RMarkdown). Para acceder a estos, selecciona la carpeta respectiva, y descarga los archivos necesarios.
