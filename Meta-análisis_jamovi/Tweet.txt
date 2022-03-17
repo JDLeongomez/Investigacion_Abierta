@@ -1,0 +1,3 @@
+¿Qué tan estables son los modelos según el tamaño de muestra? En negro, una población hipotética; en rojo, muestras aleatorias como las que se obtendrían en diferentes estudios. 
+
+Lo hice en #RStats para clase. ¡La importancia del n para tener modelos confiables!
