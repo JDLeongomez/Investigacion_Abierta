@@ -1,7 +1,7 @@
 #########################################################################################################
 # Código usado para las simulaciones y gráficas del video                                               #
 # Qué es un valor p? Te lo puedo mostrar gráficamente (https://youtu.be/X0At_roDnHc)                    #
-# del canal de YouTube Investigación Abierta (https://www.youtube.com/channel/UCs-6iLG3cnZwtGFcvyObPpA)  #
+# del canal de YouTube Investigación Abierta (https://www.youtube.com/channel/UCs-6iLG3cnZwtGFcvyObPpA) #
 # Juan David Leongómez, 2020                                                                            #
 #########################################################################################################
 
@@ -17,7 +17,7 @@ library(reshape2)
 # medias
 m1 <- 165
 m2 <- 65
-# Varianza
+# Varianzas
 s1 <- 12
 s2 <- 6
 # Correlaciones
