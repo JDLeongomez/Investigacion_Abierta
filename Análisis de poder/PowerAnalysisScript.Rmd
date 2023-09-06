@@ -4,7 +4,7 @@ title: |
   [![Investigación Abierta](IA_logoBlanco.png)](https://www.youtube.com/user/juanleongomez)
 subtitle: 'Opciones gratuitas y abiertas, con énfasis en los paquetes {pwr} y {Superpower} para R'
 author: 'Juan David Leongómez^[Laboratorio de Análisis del Comportamiento Humano, Facultad de Psicología, Universidad El Bosque, Bogotá, Colombia. Información y datos de contacto disponibles desde mi sitio web [jdleongomez.info](https://jdleongomez.info/es/).]'
-date: "`r format(Sys.Date(),'%d %B, %Y')`"
+date: "08 septiembre, 2020 (revisión `r format(Sys.Date(),'%d %B, %Y')`)"
 output:
   pdf_document:
     highlight: breezedark
@@ -12,8 +12,8 @@ output:
     toc: yes
     toc_depth: '5'
     keep_tex: true
-    includes:
-      in_header: header.tex
+  #  includes:
+  #    in_header: header.tex
 editor_options:
   chunk_output_type: console
 geometry: margin=2cm
@@ -51,7 +51,6 @@ library(pwr)
 library(Superpower)
 library(ggplot2)
 library(tidyverse)
-library(orddom)
 library(kableExtra)
 library(reportr)
 ```
@@ -94,7 +93,7 @@ Si se saben tres de estos cuatro valores, ya que están interrelacionados, se pu
 
 Normalmente, determinar el $\alpha$, y el poder estadístico deseado no es problemático. Se suele usar un $\alpha$ = 0.05, y un poder mínimo de 80% ($1-\beta$ = 0.8), aunque siempre sería mejor usar 90% ($1-\beta$ = 0.9) si esto es posible, y teniendo en cuenta que esto aumentará el tamaño de muestra necesario. Entonces, si ya tengo el $\alpha$, y el poder estadístico deseado, el único problema es saber qué tamaño del efecto usar (**Figura 1**). Para esto, sin embargo, no hay una única respuesta, ni una que carezca de limitaciones.
 
-```{r fig1, echo = FALSE, out.width = "400px", fig.align = "center", fig.cap = "\\textbf{Figura 1.} Parámetros necesarios para calcular el tamaño de muestra necesario, para obtener un poder estadístico deseado."}
+```{r fig1, echo = FALSE, out.width = "450px", fig.align = "center", fig.cap = "\\textbf{Figura 1.} Parámetros necesarios para calcular el tamaño de muestra necesario, para obtener un poder estadístico deseado."}
 knitr::include_graphics("4parametros.png")
 ```
 
@@ -203,7 +202,6 @@ kable(tab2,
   footnote(general = "Las ecuaciones de esta tabla reproducen las presentados en la Tabla 2 de Correll et al. (2020).",
            threeparttable = TRUE,
            general_title = "Nota:")
-
 ```
 
 A continuación, presentaré algunas opciones de Software gratuito para análisis de poder estadístico y tamaño de muestra.
@@ -228,60 +226,191 @@ Como alternativa, en [*jamovi*](https://www.jamovi.org/) existe el paquete [*jpo
 
 Si quieres ver mis videos acerca de *jamovi*, y cómo instalarlo y usarlo (con énfasis en la transición desde *SPSS*), haz clic [acá](https://www.youtube.com/playlist?list=PLHk7UNt35ccXX4I61PiVMOf9VkijgaJN8).
 
-## Tamaño del efecto en *jpower* para *jamovi*: $\delta$ de Cliff
+## Tamaño del efecto en *jpower* para *jamovi*: $\delta$
 
-*jpower* usa, como tamaño del efecto para pruebas-*t*, el $\delta$ (delta) de Cliff [@cliffOrdinalMethodsBehavioral1996]. Es un tamaño de efecto comparable al más común $d$ de Cohen, pero que tiene una ventaja importante: a diferencia del $d$ de Cohen, que asume de distribuciones normales, el $\delta$ de Cliff es un tamaño de efecto no paramétrico, que como tal no tiene supuestos respecto a la distribución de los datos. Esto es especialmente útil al planear un estudio, cuando no se conoce la distribución de los datos que se obtendrán, ni si los resultados serán analizados con pruebas paramétricas o no paramétricas.
+*jpower* usa, como tamaño del efecto para pruebas-*t*, el $\delta$ (delta) que es como se suele representar la diferencia estandarizada entre dos medias a nivel de una población entera. 
 
-Adicionalmente, el $\delta$ de Cliff es sumamente intuitivo: si, por ejemplo, tenemos dos grupos (Grupo 1 y Grupo 2), y los comparamos, el $\delta$ de Cliff es sencillamente la probabilidad de que un valor tomado aleatoriamente del Grupo 2, sea mayor a un valor tomado aleatoriamente del Grupo 1, menos la probabilidad contraria (que un valor tomado aleatoriamente del Grupo 1, sea mayor a un valor tomado aleatoriamente del Grupo 2).
+Es completamente equivalente a la $d$ de Cohen (o $g$ de hedges) pero, a diferencia de la $d$ de Cohen, hace referencia al tamaño de efecto en la población entera, en vez de al efecto encontrado en una muestra. 
 
-Como indicación de la relación entre estas medidas de tamaño del efecto, en la **Tabla 3** comparo valores del ($\delta$) de Cliff con los del $d$ de Cohen, resaltando sin embargo las definiciones de referencia propuestas por Cohen, para comparación de valores equivalentes. Como lo he discutido ampliamente, es importante tener en cuenta siempre que pensar tamaños del efecto en términos de "Pequeños", "Medios", o "Grandes" tiene serias limitaciones y su uso indiscriminado ha sido seriamente cuestionado [ver e.g. @bakkerSmallMediumLarge2019; @correllAvoidCohenSmall2020], y la *importancia* de un tamaño de efecto cambia según la disciplina y el fenómeno estudiado (para una discusión de las limitaciones de las definiciones de Cohen, ver sección [1.3.1 Por qué no es buena idea usar las definiciones de Cohen](#probs)).
+Entonces, dado que el $\delta$ es un tamaño de efecto completamente equivalente a la $d$ de Cohen (o $g$ de Hedges), pero que hace referencia a una población, *jamovi* nos está dando una pista: más que simplemente poner la $d$ encontrada en un estudio anterior, sería ideal estimar el tamaño de efecto que esperamos (hipotetizamos) en la población entera, o el tamaño de efecto mínimo que esperamos que exista en la población entera, para estimar un tamaño de muestra que nos de un poder estadístico suficiente para ese efecto (y, obviamente, un poder mayor si el efecto fuese mayor).
 
-```{r tab3, echo = FALSE}
-colnames <- c("Definición de Cohen \n (¡solo como referencia!)",
-              "$d$ de Cohen",
-              "Delta de Cliff ($\\delta$)")
+Es importante tener en cuenta que, aunque la $d$ de Cohen es el tamaño del efecto más común para diferencias estandarizadas entre dos medias, tiende a proporcionar estimaciones sesgadas cuando se tienen tamaños de muestra pequeños[^9] (**Figura 2**). Por este motivo, la $g$ de Hedges es siempre una alternativa valiosa que encontrarás en muchos artículos (y que,  sería mejor usar en todos los casos).
 
-tab3 <- data.frame(ref = c("", "Pequeño","", "", "Medio","", "", "Grande", rep("", times = 2)),
-                    cohen = seq(0.1, 1.0, by = 0.1),
-                    cliff = c(cohd2delta(0.1),
-                              cohd2delta(0.2),
-                              cohd2delta(0.3),
-                              cohd2delta(0.4),
-                              cohd2delta(0.5),
-                              cohd2delta(0.6),
-                              cohd2delta(0.7),
-                              cohd2delta(0.8),
-                              cohd2delta(0.9),
-                              cohd2delta(1.0)))
+[^9]: Esto se debe a que tanto la $d$ de Cohen como la $g$ de Hedges agrupan las varianzas (asumen que los grupos tienen la misma desviación estándar), pero la $g$ de Hedges agrupa utilizando $n - 1$ para cada muestra en lugar de $n$, lo que proporciona una mejor estimación, especialmente cuanto menor es el tamaño de las muestras.
 
-kable(tab3,
-      escape = FALSE,
-      booktabs = TRUE,
-      align = "c", 
-      digits = 3,
-      col.names = linebreak(colnames,
-                            align = "c"),
-      caption = "\\textbf{Tabla 3.} Equivalencia de valores de referencia para $d$ de Cohen y delta de Cliff ($\\delta$)") %>%
-  kable_styling(latex_options = c("HOLD_position")) %>%
-  column_spec(1, bold = TRUE) %>%
-  row_spec(c(2,5,8), background = "#c4c4c4") %>%
-  footnote(general = "Transformación hecha con la función \\\\href{https://www.rdocumentation.org/packages/orddom/versions/3.1/topics/cohd2delta}{cohd2delta} del paquete \\\\href{https://www.rdocumentation.org/packages/orddom/versions/3.1}{orddom}.",
-           threeparttable = TRUE,
-           escape = FALSE,
-           general_title = "Nota:")
+```{r fig2, echo = FALSE, message = FALSE, fig.height = 4, fig.cap="**Figura 2.** Ejemplo de la diferencia entre el efecto estimado como *d* de Cohen versus el efecto estimado como *g* de Hedges (eje Y), según el tamaño de muestra (eje X). En muestras péqueñas la *d* de Cohen estima un efecto superior a la *g* de Hedges (en rojo), pero a medida que el tamaño de muestra aumenta (en azul), la diferencia desaparece y tiende a 0 (línea gris). *Nota:* en este ejemplo, la diferencia entre las dos medias es 2 y la desviación estándar es de 4."}
+library(effectsize)
+library(faux)
+library(scales)
+
+n5 <- rnorm_multi(
+  n = 5, 
+  vars = 2, 
+  r = 0, 
+  mu = c(12, 10), 
+  sd = 4, 
+  varnames = c("A", "B"),
+  empirical = TRUE)  |> 
+  pivot_longer(cols = A:B,
+               names_to = "category",
+               values_to = "value")
+
+n10 <- rnorm_multi(
+  n = 10, 
+  vars = 2, 
+  r = 0, 
+  mu = c(12, 10), 
+  sd = 4, 
+  varnames = c("A", "B"),
+  empirical = TRUE)  |> 
+  pivot_longer(cols = A:B,
+               names_to = "category",
+               values_to = "value")
+
+n50 <- rnorm_multi(
+  n = 50, 
+  vars = 2, 
+  r = 0, 
+  mu = c(12, 10), 
+  sd = 4, 
+  varnames = c("A", "B"),
+  empirical = TRUE)  |> 
+  pivot_longer(cols = A:B,
+               names_to = "category",
+               values_to = "value")
+
+n100 <- rnorm_multi(
+  n = 100, 
+  vars = 2, 
+  r = 0, 
+  mu = c(12, 10), 
+  sd = 4, 
+  varnames = c("A", "B"),
+  empirical = TRUE)  |> 
+  pivot_longer(cols = A:B,
+               names_to = "category",
+               values_to = "value")
+
+n500 <- rnorm_multi(
+  n = 500, 
+  vars = 2, 
+  r = 0, 
+  mu = c(12, 10), 
+  sd = 4, 
+  varnames = c("A", "B"),
+  empirical = TRUE)  |> 
+  pivot_longer(cols = A:B,
+               names_to = "category",
+               values_to = "value")
+
+n1000 <- rnorm_multi(
+  n = 1000, 
+  vars = 2, 
+  r = 0, 
+  mu = c(12, 10), 
+  sd = 4, 
+  varnames = c("A", "B"),
+  empirical = TRUE)  |> 
+  pivot_longer(cols = A:B,
+               names_to = "category",
+               values_to = "value")
+
+n5000 <- rnorm_multi(
+  n = 5000, 
+  vars = 2, 
+  r = 0, 
+  mu = c(12, 10), 
+  sd = 4, 
+  varnames = c("A", "B"),
+  empirical = TRUE)  |> 
+  pivot_longer(cols = A:B,
+               names_to = "category",
+               values_to = "value")
+
+n10000 <- rnorm_multi(
+  n = 10000, 
+  vars = 2, 
+  r = 0, 
+  mu = c(12, 10), 
+  sd = 4, 
+  varnames = c("A", "B"),
+  empirical = TRUE)  |> 
+  pivot_longer(cols = A:B,
+               names_to = "category",
+               values_to = "value")
+
+n50000 <- rnorm_multi(
+  n = 50000, 
+  vars = 2, 
+  r = 0, 
+  mu = c(12, 10), 
+  sd = 4, 
+  varnames = c("A", "B"),
+  empirical = TRUE)  |> 
+  pivot_longer(cols = A:B,
+               names_to = "category",
+               values_to = "value")
+
+n100000 <- rnorm_multi(
+  n = 100000, 
+  vars = 2, 
+  r = 0, 
+  mu = c(12, 10), 
+  sd = 4, 
+  varnames = c("A", "B"),
+  empirical = TRUE)  |> 
+  pivot_longer(cols = A:B,
+               names_to = "category",
+               values_to = "value")
+
+d5 <- cohens_d(value ~ category, data = n5)
+g5 <- hedges_g(value ~ category, data = n5)
+
+d10 <- cohens_d(value ~ category, data = n10)
+g10 <- hedges_g(value ~ category, data = n10)
+
+d50 <- cohens_d(value ~ category, data = n50)
+g50 <- hedges_g(value ~ category, data = n50)
+
+d100 <- cohens_d(value ~ category, data = n100)
+g100 <- hedges_g(value ~ category, data = n100)
+
+d500 <- cohens_d(value ~ category, data = n500)
+g500 <- hedges_g(value ~ category, data = n500)
+
+d1000 <- cohens_d(value ~ category, data = n1000)
+g1000 <- hedges_g(value ~ category, data = n1000)
+
+d5000 <- cohens_d(value ~ category, data = n5000)
+g5000 <- hedges_g(value ~ category, data = n5000)
+
+d10000 <- cohens_d(value ~ category, data = n10000)
+g10000 <- hedges_g(value ~ category, data = n10000)
+
+d50000 <- cohens_d(value ~ category, data = n50000)
+g50000 <- hedges_g(value ~ category, data = n50000)
+
+d100000 <- cohens_d(value ~ category, data = n100000)
+g100000 <- hedges_g(value ~ category, data = n100000)
+
+
+tabdtg <- data.frame("n" = c(5, 10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000),
+                     "d" = c(d5$Cohens_d, d10$Cohens_d, d50$Cohens_d, d100$Cohens_d, d500$Cohens_d, d1000$Cohens_d, d5000$Cohens_d, d10000$Cohens_d, d50000$Cohens_d, d100000$Cohens_d),
+                     "g" = c(g5$Hedges_g, g10$Hedges_g, g50$Hedges_g, g100$Hedges_g, g500$Hedges_g, g1000$Hedges_g, g5000$Hedges_g, g10000$Hedges_g, g50000$Hedges_g, g100000$Hedges_g))
+
+ggplot(tabdtg, aes(x = n, y = d - g, color = d - g)) +
+  geom_hline(yintercept = 0, color = "grey", linetype = 2) +
+  geom_line() +
+  geom_point() +
+  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                labels = label_number_auto()) +
+  annotation_logticks(sides = "b") +
+  scale_color_gradient(low = "blue", high = "red") +
+  labs(x = "Tamaño de muestra", 
+       y = expression(paste("Diferencia entre ", italic("d"), " de Cohen y ", italic("g"), " de Hedges"))) +
+  theme_classic() +
+  theme(legend.position = "none")
 ```
-
-En cualquier caso, existen calculadoras para el $\delta$ de Cliff disponibles, bien sea a partir de una base de datos, o para convertir un $d$ de Cohen en un $\delta$ de Cliff. Por ejemplo:
-
--   En *R*, hay opciones como:
-
-    -   La función [`cliff.delta`](https://www.rdocumentation.org/packages/effsize/versions/0.8.0/topics/cliff.delta) del paquete [`effsize`](https://www.rdocumentation.org/packages/effsize/versions/0.8.0), que permite calcular el $\delta$ de Cliff a partir de una base de datos.
-    -   La función [`cohd2delta`](https://www.rdocumentation.org/packages/orddom/versions/3.1/topics/cohd2delta) del paquete [`orddom`](https://www.rdocumentation.org/packages/orddom/versions/3.1) que permite calcular un $\delta$ de Cliff a partir de un $d$ de Cohen [la comparación de se basa en el método descrito en @hubertyGroupOverlapBasis2000].\
-
--   Si prefieres no usar *R*:
-
-    -   [*Cliff's Delta Calculator (CDC)*](https://iipus.webs.com/), es una pequeña aplicación gratuita [ver @macbethCliffDeltaCalculator2011, que contiene instrucciones para su descarga y uso], e incluso macros de *Excel* [ver @goedhartCalculationDistributionFree2016]. Permite calcular el $\delta$ de Cliff a partir de una base de datos.
-    -   En [esta página](https://www.real-statistics.com/non-parametric-tests/mann-whitney-test/cliffs-delta/), Charles Zaiontz explica cómo calcular el $\delta$ de Cliff en *Excel*, a partir de una base de datos.
 
 ------------------------------------------------------------------------
 
@@ -289,11 +418,11 @@ En cualquier caso, existen calculadoras para el $\delta$ de Cliff disponibles, b
 
 [*R*](https://www.r-project.org/) puede parecer intimidante al principio, pues requiere comandos (o *"scripting"*), y a veces incluso algo de programación. Sin embargo, es probablemente la mejor herramienta que existe para hacer cualquier tipo de análisis de datos, y con certeza supera por mucho a los *software* comerciales (como *SPSS* y *Stata*), que además suelen ser costosos.
 
-Primero, *R* es un software completamente **libre** y **gratuito** y, al ser abierto, sus avances y funciones no están limitados por lo que una compañía implemente (típicamente con fines comerciales y sujeto a las leyes de oferta y demanda), sino que depende directamente del trabajo colaborativo, y sin ánimo de lucro, de millones de personas alrededor del mundo; por esto, avanza más rápido que cualquier *software* comercial, y siempre tiene opciones para poder implementar las técnicas más novedosas[^9]. Segundo, al ser en últimas un lenguaje de programación, permite hacer prácticamente cualquier cosa que se pueda hacer en un computador[^10], explotando realmente sus capacidades.
+Primero, *R* es un software completamente **libre** y **gratuito** y, al ser abierto, sus avances y funciones no están limitados por lo que una compañía implemente (típicamente con fines comerciales y sujeto a las leyes de oferta y demanda), sino que depende directamente del trabajo colaborativo, y sin ánimo de lucro, de millones de personas alrededor del mundo; por esto, avanza más rápido que cualquier *software* comercial, y siempre tiene opciones para poder implementar las técnicas más novedosas[^10]. Segundo, al ser en últimas un lenguaje de programación, permite hacer prácticamente cualquier cosa que se pueda hacer en un computador[^11], explotando realmente sus capacidades.
 
-[^9]: Prácticamente cada *nerd* que desarrolla una nueva prueba o técnica de análisis de datos, hace, además de una publicación, un paquete para *R*.
+[^10]: Prácticamente cada *nerd* que desarrolla una nueva prueba o técnica de análisis de datos, hace, además de una publicación, un paquete para *R*.
 
-[^10]: Solo como un ejemplo, este documento en PDF, [mi sitio web](https://jdleongomez.info/es/), y [mi hoja de vida](https://jdleongomez.info/es/files/jdl_cv_es.pdf), fueron todos creados en *R*.
+[^11]: Solo como un ejemplo, este documento en PDF, [mi sitio web](https://jdleongomez.info/es/), y [mi hoja de vida](https://jdleongomez.info/es/files/jdl_cv_es.pdf), fueron todos creados en *R*.
 
 No puedo enfatizar de manera suficiente cuánto recomiendo, a cualquier persona que trabaje con datos, aprender a usar *R* (u otro lenguaje comparable, como [*Phyton*](https://www.python.org/)), tanto por la calidad y eficiencia de los análisis, como por las posibilidades y ventajas laborales que esto da en el mundo de hoy.
 
@@ -301,9 +430,9 @@ Para usar los paquetes de *R*, se necesita por supuesto tener el programa instal
 
 Para instalar *R* y/o *RStudio*, hay muchos tutoriales. Si tienes que hacerlo, te recomiendo buscar videos en YouTube, donde hay variedad de opciones (ninguna creada por mí hasta ahora) para todos los sistemas operativos, incluyendo Windows (por ejemplo [este video](https://www.youtube.com/watch?v=D9Bp11iZssc)), Mac (por ejemplo [este video](https://www.youtube.com/watch?v=UCPr3W_wR5I)), y Ubuntu (por ejemplo [este video](https://www.youtube.com/watch?v=PFlLatx5mlQ)).
 
-En las siguientes secciones, el código de [*R*](https://www.r-project.org/) está siempre resaltado sobre un fondo oscuro. Para correr estos códigos, puedes sencillamente copiarlos y pegarlos en un *script*[^11], o directamente en la consola de [*R*](https://www.r-project.org/).
+En las siguientes secciones, el código de [*R*](https://www.r-project.org/) está siempre resaltado sobre un fondo oscuro. Para correr estos códigos, puedes sencillamente copiarlos y pegarlos en un *script*[^12], o directamente en la consola de [*R*](https://www.r-project.org/).
 
-[^11]: [Este video](https://youtu.be/ejQ0BS2gVJI), hecho por [Juan Carlos Correa](https://docentes.konradlorenz.edu.co/2019/06/juan-carlos-correa.html) [-@correaScriptsVideo2020], es un ejemplo de introducción al uso de *scripts* de *R* pero por supuesto hay muchos disponibles.
+[^12]: [Este video](https://youtu.be/ejQ0BS2gVJI), hecho por [Juan Carlos Correa](https://docentes.konradlorenz.edu.co/2019/06/juan-carlos-correa.html) [-@correaScriptsVideo2020], es un ejemplo de introducción al uso de *scripts* de *R* pero por supuesto hay muchos disponibles.
 
 # Datos usados en los ejemplos de paquetes de *R*
 
@@ -334,9 +463,9 @@ library(pwr) #para cargar el paquete una vez instalado.
 
 ## Niveles de referencia de los tamaños del efecto. Función `cohen.ES`
 
-El paquete *pwr* tiene una función que podría resultar útil cuando no hay información respecto al tamaño del efecto esperado, pero que debe ser usada con cautela y buen criterio[^12]. Se trata de la función `cohen.ES`, que permite rápidamente saber cuáles son las definiciones de referencia para diferentes tamaños del efecto. Esta sencilla función solo tiene dos argumentos: *test* y *size*.
+El paquete *pwr* tiene una función que podría resultar útil cuando no hay información respecto al tamaño del efecto esperado, pero que debe ser usada con cautela y buen criterio[^13]. Se trata de la función `cohen.ES`, que permite rápidamente saber cuáles son las definiciones de referencia para diferentes tamaños del efecto. Esta sencilla función solo tiene dos argumentos: *test* y *size*.
 
-[^12]: Como discutí extensamente (ver sección [1.3.1 Por qué no es buena idea usar las definiciones de Cohen](#probs)), Cohen [-@cohenPowerPrimer1992; -@cohenStatisticalPowerAnalysis1988] propuso definiciones de referencia para los tamaños de efecto (efectos "pequeños", "medios", y "grandes"), pero hay múltiples problemas con su uso indiscriminado.
+[^13]: Como discutí extensamente (ver sección [1.3.1 Por qué no es buena idea usar las definiciones de Cohen](#probs)), Cohen [-@cohenPowerPrimer1992; -@cohenStatisticalPowerAnalysis1988] propuso definiciones de referencia para los tamaños de efecto (efectos "pequeños", "medios", y "grandes"), pero hay múltiples problemas con su uso indiscriminado.
 
 1.  `test`: permite definir el tipo de tamaño del efecto que necesito. Las opciones incluyen "t", para pruebas-*t*, "r" para correlaciones, "anov" para ANOVAs de una vía (usando *f* de Cohen como medida del tamaño del efecto), y "f2" para regresiones múltiples (en referencia al $f^2$).
 
@@ -364,9 +493,9 @@ Si, por ejemplo, quiero hacer un estudio, en el que espero determinar si existe 
 2.  El alfa ($\alpha$) o nivel de significación estadística (típicamente 0.05.).
 3.  El poder estadístico deseado (ver Sección [1.1 ¿Qué es Potencia o Poder Estadístico?](#power)).
 
-Por ejemplo, si quiero tener 80% de probabilidades de detectar como significativa una correlación con un tamaño del efecto de *r* = 0.3, con un $\alpha$ = 0.05, puedo usar la siguiente función (en este caso, *"guardé"*[^13] el resultado de la función en un objeto que llamé `pcorr`).
+Por ejemplo, si quiero tener 80% de probabilidades de detectar como significativa una correlación con un tamaño del efecto de *r* = 0.3, con un $\alpha$ = 0.05, puedo usar la siguiente función (en este caso, *"guardé"*[^14] el resultado de la función en un objeto que llamé `pcorr`).
 
-[^13]: En realidad, como cualquier usuario habitual de *R* sabe, lo que he hecho no es realmente *"guardar"*, sino ***asignar*** el resultado de la función a un objeto. Uso la palabra *"guardar"* para simplificar la explicación para personas que no estén familiarizadas con *R*, u otros lenguajes de programación, ya que los objetos suelen estar ocultos en la mayoría de los programas comerciales, y no requieren que el usuario los manipule directamente.
+[^14]: En realidad, como cualquier usuario habitual de *R* sabe, lo que he hecho no es realmente *"guardar"*, sino ***asignar*** el resultado de la función a un objeto. Uso la palabra *"guardar"* para simplificar la explicación para personas que no estén familiarizadas con *R*, u otros lenguajes de programación, ya que los objetos suelen estar ocultos en la mayoría de los programas comerciales, y no requieren que el usuario los manipule directamente.
 
 ```{r}
 pcorr <- pwr.r.test(r = 0.3, 
@@ -388,11 +517,11 @@ pcorr
 
 Como se ve, en el campo llamado "`n`", me dice que la muestra necesaria para obtener el poder deseado de 90% para detectar como significativa una correlación con un *r* de 0.3, es de 111.8068. Por supuesto, yo no puedo tener un número no entero de observaciones o participantes, por lo que el valor *n* (tamaño de muestra), debe aproximarse al siguiente número entero superior (en este caso, 112).
 
-Finalmente, puedo ver la asociación entre el tamaño de la muestra y el poder estadístico gráficamente con la función `plot`[^14], introduciendo como argumento mi objeto (en este caso `pcorr`) puedo ver una figura de este análisis (**Figura 2**).
+Finalmente, puedo ver la asociación entre el tamaño de la muestra y el poder estadístico gráficamente con la función `plot`[^15], introduciendo como argumento mi objeto (en este caso `pcorr`) puedo ver una figura de este análisis (**Figura 3**).
 
-[^14]: Las figuras que produce la función `plot` para análisis hechos en el paquete `pwr`, son objetos de clase `ggplot`, por lo que alguien familiarizado con el paquete [`ggplot2`](https://ggplot2.tidyverse.org/) puede modificar la figura para que, por ejemplo, los ejes, título y anotaciones estén en español, o para cambiar el tema y colores.
+[^15]: Las figuras que produce la función `plot` para análisis hechos en el paquete `pwr`, son objetos de clase `ggplot`, por lo que alguien familiarizado con el paquete [`ggplot2`](https://ggplot2.tidyverse.org/) puede modificar la figura para que, por ejemplo, los ejes, título y anotaciones estén en español, o para cambiar el tema y colores.
 
-```{r fig2, fig.cap="**Figura 2.** Asociación entre el tamaño de la muestra y el poder estadístico para una correlación de 0.3, con un $\\alpha$ de 0.05, producida con la función `plot` del paquete `pwr`. Como se puede ver, sugiere un *n* de 112 (línea azul), para alcanzar un poder de 0.9 (90%)."}
+```{r fig3, fig.cap="**Figura 3.** Asociación entre el tamaño de la muestra y el poder estadístico para una correlación de 0.3, con un $\\alpha$ de 0.05, producida con la función `plot` del paquete `pwr`. Como se puede ver, sugiere un *n* de 112 (línea azul), para alcanzar un poder de 0.9 (90%)."}
 plot(pcorr)
 ```
 
@@ -417,9 +546,9 @@ pcorrgreater
 
 \textcolor{red}{\faBookmark} **Es importante tener en cuenta que este análisis de poder de una cola únicamente tendrá sentido si mi correlación es, de hecho, positiva.**
 
-Al igual que antes, con la función `plot`, puedo ver una figura de este análisis (**Figura 3**).
+Al igual que antes, con la función `plot`, puedo ver una figura de este análisis (**Figura 4**).
 
-```{r fig3, fig.cap="**Figura 3.** Asociación entre el tamaño de la muestra y el poder estadístico para una correlación **positiva** (de una cola), de **al menos** 0.3, con un $\\alpha$ de 0.05, producida con la función `plot` del paquete `pwr`. Como se puede ver, sugiere un *n* de 67 (línea azul), para alcanzar un poder de 0.9 (90%)."}
+```{r fig4, fig.cap="**Figura 4.** Asociación entre el tamaño de la muestra y el poder estadístico para una correlación **positiva** (de una cola), de **al menos** 0.3, con un $\\alpha$ de 0.05, producida con la función `plot` del paquete `pwr`. Como se puede ver, sugiere un *n* de 67 (línea azul), para alcanzar un poder de 0.9 (90%)."}
 plot(pcorrgreater)
 ```
 
@@ -455,9 +584,9 @@ ptInd <- pwr.t.test(d = 0.4,
 ptInd #los resultados son MUY claros en cuanto a que el n es para cada grupo.
 ```
 
-Al igual que con las correlaciones, con la función `plot`, puedo ver una figura de este análisis (**Figura 4**).
+Al igual que con las correlaciones, con la función `plot`, puedo ver una figura de este análisis (**Figura 5**).
 
-```{r fig4, fig.height = 3.4, fig.cap="**Figura 4.** Asociación entre el tamaño de la muestra y el poder estadístico para una prueba-*t* de 0.4, con un $\\alpha$ de 0.05, producida con la función `plot` del paquete `pwr`. Como se puede ver, sugiere un *n* de 133 por grupo (línea azul), para alcanzar un poder de 0.9 (90%)."}
+```{r fig5, fig.height = 3.4, fig.cap="**Figura 5.** Asociación entre el tamaño de la muestra y el poder estadístico para una prueba-*t* de 0.4, con un $\\alpha$ de 0.05, producida con la función `plot` del paquete `pwr`. Como se puede ver, sugiere un *n* de 133 por grupo (línea azul), para alcanzar un poder de 0.9 (90%)."}
 plot(ptInd)
 ```
 
@@ -466,8 +595,7 @@ plot(ptInd)
 Para este ejemplo, *"guardé"* el resultado de la función en un objeto que llamé `ptUna`.
 
 ```{r}
-ptUna <- pwr.t.test(d = 0.4,
-                    sig.level = 0.05,
+ptUna <- pwr.t.test(d = 0.4, sig.level = 0.05,
                     power = 0.9,
                     type = "one.sample")
 ptUna
@@ -511,19 +639,19 @@ ptRepGreat
 
 \textcolor{red}{\faBookmark} **Es importante tener en cuenta que este análisis de una cola análisis únicamente tendrá sentido si mi correlación es, de hecho, positiva.**
 
-Al igual que antes, con la función `plot`, puedo ver una figura de este análisis (**Figura 5**).
+Al igual que antes, con la función `plot`, puedo ver una figura de este análisis (**Figura 6**).
 
-```{r fig5, fig.cap="**Figura 5.** Asociación entre el tamaño de la muestra y el poder estadístico para una prueba-*t* de **al menos** 0.4 (una cola), con un $\\alpha$ de 0.05, producida con la función `plot` del paquete `pwr`. Como se puede ver, sugiere un *n* de 55 (línea azul), para alcanzar un poder de 0.9 (90%)."}
+```{r fig6, fig.cap="**Figura 6.** Asociación entre el tamaño de la muestra y el poder estadístico para una prueba-*t* de **al menos** 0.4 (una cola), con un $\\alpha$ de 0.05, producida con la función `plot` del paquete `pwr`. Como se puede ver, sugiere un *n* de 55 (línea azul), para alcanzar un poder de 0.9 (90%)."}
 plot(ptRepGreat)
 ```
 
 ## Análisis de poder para ANOVAs de una vía. Función `pwr.anova.test`
 
-Por lo menos hasta ahora[^15], `pwr` solo permite hacer análisis de poder para ANOVAs de una vía, balanceados (mismo número de participantes u observaciones por grupo), y de medidas independientes (es decir, comparando un número *k* de grupos)[^16].
+Por lo menos hasta ahora[^16], `pwr` solo permite hacer análisis de poder para ANOVAs de una vía, balanceados (mismo número de participantes u observaciones por grupo), y de medidas independientes (es decir, comparando un número *k* de grupos)[^17].
 
-[^15]: La versión actual de `pwr` es la 1.3-0.
+[^16]: La versión actual de `pwr` es la 1.3-0.
 
-[^16]: Para diseños más complejos, incluyendo diseños factoriales de medidas independientes, repetidas, o mixtas (tanto factores de medidas independientes como repetidas), la mejor opción actualmente es el paquete `Superpower`, descrito en la siguiente sección.
+[^17]: Para diseños más complejos, incluyendo diseños factoriales de medidas independientes, repetidas, o mixtas (tanto factores de medidas independientes como repetidas), la mejor opción actualmente es el paquete `Superpower`, descrito en la siguiente sección.
 
 Los argumentos de esta función son similares a los de las funciones `pwr.r.test` y `pwr.t.test`:
 
@@ -563,7 +691,7 @@ panova
 
 Al igual que con las demás funciones para calcular el poder estadístico del paquete `pwr`, con la función `plot`, puedo ver una figura de este análisis.
 
-```{r fig6, fig.cap="**Figura 6.** Asociación entre el tamaño de la muestra y el poder estadístico para un ANOVA de 0.4, con un $\\alpha$ de 0.05, producida con la función `plot` del paquete `pwr`. Como se puede ver, sugiere un *n* de 58 participantes por grupo (línea azul), para alcanzar un poder de 0.9 (90%)."}
+```{r fig7, fig.cap="**Figura 7.** Asociación entre el tamaño de la muestra y el poder estadístico para un ANOVA de 0.4, con un $\\alpha$ de 0.05, producida con la función `plot` del paquete `pwr`. Como se puede ver, sugiere un *n* de 58 participantes por grupo (línea azul), para alcanzar un poder de 0.9 (90%)."}
 plot(panova)
 ```
 
@@ -581,9 +709,9 @@ En este caso, yo obtendría 3 valores *p*:
 
 1.  Efecto principal del género, que me diría si hay diferencias en el salario entre hombres y mujeres.
 2.  Efecto principal del nivel educativo, que me dice si hay diferencias entre el salario de médicos con pregrado y médicos con postgrado como máximo nivel educativo alcanzado.
-3.  Interacción entre género y nivel educativo, que me dice si el salario depende simultáneamente del género y el nivel educativo. Por ejemplo, si entre las mujeres ganan más dinero las personas con postgrado, pero entre los hombres ganan más las personas con pregrado[^17].
+3.  Interacción entre género y nivel educativo, que me dice si el salario depende simultáneamente del género y el nivel educativo. Por ejemplo, si entre las mujeres ganan más dinero las personas con postgrado, pero entre los hombres ganan más las personas con pregrado[^18].
 
-[^17]: Obviamente este ejemplo muy seguramente no representa la realidad. Es solamente un ejemplo hipotético.
+[^18]: Obviamente este ejemplo muy seguramente no representa la realidad. Es solamente un ejemplo hipotético.
 
 Por supuesto, yo podría tener diseños más complejos, como un 2 $\times$ 4, donde tengo, de nuevo, 2 factores, pero uno que tiene 2 niveles, y otro que tiene 4. O un diseño 2 $\times$ 2 $\times$ 3, donde hay 3 factores, con 2, 2, y 3 niveles, respectivamente.
 
@@ -601,15 +729,15 @@ Dada la complejidad de estos cálculos, y la multiplicidad de efectos (principal
 
 En contraste, el paquete `Superpower` permite hacer análisis, no solo para diseños más complejos, sino calculando simultáneamente el poder para cada efecto, y para posibles comparaciones *post-hoc*.
 
-Este proceso es sumamente complejo, y no se puede solucionar de manera matemática *sencilla*[^18], por lo que `Superpower` usa una estrategia interesante: simula una base de datos para el diseño propuesto (dadas una serie de características de cada variable y su relación con las demás[^19]), y empíricamente estima el poder, a partir de hacer muchas iteraciones (repeticiones aleatorias) de esta simulación.
+Este proceso es sumamente complejo, y no se puede solucionar de manera matemática *sencilla*[^19], por lo que `Superpower` usa una estrategia interesante: simula una base de datos para el diseño propuesto (dadas una serie de características de cada variable y su relación con las demás[^20]), y empíricamente estima el poder, a partir de hacer muchas iteraciones (repeticiones aleatorias) de esta simulación.
 
-[^18]: No existe una única ecuación que permita hacer este cálculo.
+[^19]: No existe una única ecuación que permita hacer este cálculo.
 
-[^19]: En particular, se necesita saber la media y desviación estándar de cada grupo y/o condición y, cuando hay factores de medidas repetidas, una matriz de correlaciones entre cada combinación de niveles.
+[^20]: En particular, se necesita saber la media y desviación estándar de cada grupo y/o condición y, cuando hay factores de medidas repetidas, una matriz de correlaciones entre cada combinación de niveles.
 
-Dadas estas complejidades, en ocasiones no es posible tener la información suficiente para hacer las simulaciones, pues se requiere de estudios previos (o pilotos) muy completos, con diseños idénticos, y que, o bien hayan reportado toda esta información, o hayan abierto libremente sus bases de datos para poder hacer estos cálculos[^20].
+Dadas estas complejidades, en ocasiones no es posible tener la información suficiente para hacer las simulaciones, pues se requiere de estudios previos (o pilotos) muy completos, con diseños idénticos, y que, o bien hayan reportado toda esta información, o hayan abierto libremente sus bases de datos para poder hacer estos cálculos[^21].
 
-[^20]: Esta es una de las razones por las cuales es muy importante que en cada artículo haya una sección de descriptivos muy buena y completa, e idealmente que los datos estén disponibles para poder re-analizarlos, o hacer este tipo de análisis descriptivos necesarios para hacer un análisis de poder
+[^21]: Esta es una de las razones por las cuales es muy importante que en cada artículo haya una sección de descriptivos muy buena y completa, e idealmente que los datos estén disponibles para poder re-analizarlos, o hacer este tipo de análisis descriptivos necesarios para hacer un análisis de poder
 
 Por esto, la forma de usar `Superpower` y sus funciones, es muy distinta a la de `pwr`. En las siguientes secciones mostraré ejemplos de análisis de poder para diseños factoriales de medidas independientes, repetidas y mixtas, pero por simplicidad siempre usaré diseños 2 $\times$ 2. Para diseños más complejos la lógica es, en todo caso, la misma.
 
@@ -676,12 +804,12 @@ En todos los casos, los análisis de poder requieren **al menos** dos funciones:
 
 1.  `ANOVA_design` que permite especificar las características del diseño para el cual haré el análisis de poder.
 
-2.  Una función para obtener el análisis de poder con base en el diseño. Para esto, hay varias opciones, incluyendo[^21]:
+2.  Una función para obtener el análisis de poder con base en el diseño. Para esto, hay varias opciones, incluyendo[^22]:
 
     -   `ANOVA_power` que usa simulaciones para determinar el poder estadístico obtenido.
     -   `plot_power` que muestra gráficamente el poder obtenido según el tamaño de la muestra (similar a la función `plot` de `pwr`), pero para todos los efectos principales e interacciones.
 
-[^21]: El paquete `Superpower` tiene otras funciones muy útiles para análisis de poder estadístico, que por simplicidad no cubriré en este documento. Para conocerlas, recomiendo ver la [documentación del paquete](https://www.rdocumentation.org/packages/Superpower/versions/0.0.3), o la [introducción](https://cran.r-project.org/web/packages/Superpower/vignettes/intro_to_superpower.html) hecha por los autores al mismo [@lakensIntroductionSuperpower2020].
+[^22]: El paquete `Superpower` tiene otras funciones muy útiles para análisis de poder estadístico, que por simplicidad no cubriré en este documento. Para conocerlas, recomiendo ver la [documentación del paquete](https://www.rdocumentation.org/packages/Superpower/versions/0.0.3), o la [introducción](https://cran.r-project.org/web/packages/Superpower/vignettes/intro_to_superpower.html) hecha por los autores al mismo [@lakensIntroductionSuperpower2020].
 
 ### Ejemplo ANOVA factorial de medidas independientes (2 $\times$ 2)
 
@@ -699,7 +827,7 @@ Para esto, requiero los siguientes argumentos:
 
 4.  `sd`: la desviación estándar para la población (por lo cual es un solo valor. En este caso, la desviación estándar de las calificaciones del examen).
 
-5.  `labelnames` (Opcional): las etiquetas (nombres) de los factores y sus niveles. Al igual que con las medias, estas etiquetas[^22] deben estar *concatenadas* usando la función `c`. Para definirlos, se deben poner en el siguiente orden:
+5.  `labelnames` (Opcional): las etiquetas (nombres) de los factores y sus niveles. Al igual que con las medias, estas etiquetas[^23] deben estar *concatenadas* usando la función `c`. Para definirlos, se deben poner en el siguiente orden:
 
     -   Etiqueta del primer factor (en este caso "Beca")
     -   Etiquetas de los niveles de ese factor (en este caso "Sí" y "No")
@@ -708,17 +836,16 @@ Para esto, requiero los siguientes argumentos:
 
 6.  `plot` (Opcional): este es un argumento lógico que únicamente acepta como opciones `TRUE` y `FALSE"`. Si incluyo `plot = TRUE` esta función creará además una figura (*plot*) mostrando las medias y sus intervalos de confianza (si no incluyo este argumento, por defecto la función asumirá la opción `FALSE` y no producirá esta figura.)
 
-[^22]: Estos nombres o etiquetas no deben contener espacios.
+[^23]: Estos nombres o etiquetas no deben contener espacios.
 
-Entonces, el código para este diseño hipotético sería el siguiente, con 80 participantes en cada combinación de *Beca* y *Universidad* (320 en total), si los puntajes promedio (`mu`) del examen fuesen 57 (becados de universidad pública), 62 (becados de universidad privada), 53 (no becados de universidad pública), y 44 (no becados de universidad privada), con una desviación estándar (`sd`) de 15.4[^23].
+Entonces, el código para este diseño hipotético sería el siguiente, con 80 participantes en cada combinación de *Beca* y *Universidad* (320 en total), si los puntajes promedio (`mu`) del examen fuesen 57 (becados de universidad pública), 62 (becados de universidad privada), 53 (no becados de universidad pública), y 44 (no becados de universidad privada), con una desviación estándar (`sd`) de 15.4[^24].
 
-[^23]: Por supuesto, estos datos son hipotéticos y no representan ningún estudio real, ni diferencias entre estudiantes con y sin beca, ni entre universidades públicas y privadas. Solo son usados como un ejemplo.
+[^24]: Por supuesto, estos datos son hipotéticos y no representan ningún estudio real, ni diferencias entre estudiantes con y sin beca, ni entre universidades públicas y privadas. Solo son usados como un ejemplo.
 
-```{r fig7, fig.height = 4, fig.cap = "**Figura 7.** Ejemplo de la distribución de medias y sus intervalos de confianza para el diseño definido con la función `ANOVA_design`, al incluir el argumento `plot = TRUE`. Esto es muy útil para estar seguro de que las medias fueron *concatenadas* en el orden correcto."}
+```{r cache = TRUE, fig8, fig.height = 3.6, fig.cap = "**Figura 8.** Ejemplo de la distribución de medias y sus intervalos de confianza para el diseño definido con la función `ANOVA_design`, al incluir el argumento `plot = TRUE`. Esto es muy útil para estar seguro de que las medias fueron *concatenadas* en el orden correcto."}
 disenoB <- ANOVA_design(design = "2b*2b",
-                       n = 80,
+                       n = 80, sd = 15.4,
                        mu = c(57, 62, 53, 44),
-                       sd = 15.4,
                        labelnames = c("Beca", "Sí", "No", "Universidad", "Púbica", "Privada"),
                        plot = TRUE)
 ```
@@ -730,9 +857,9 @@ Esta función, además de requerir como argumento el diseño que acabo de defini
 1.  `alpha_level`: $\alpha$ (nivel de significación) deseado. Típicamente 0.05.
 2.  `p.adjust`: si se debe hacer un ajuste para comparaciones *post-hoc* (por ejemplo correcciones de *Bonferroni* con la opción `"bonferroni"`, *Holm-Bonferroni* con la opción `"holm"`, o sin corrección, usando la opción `"none"`; para ver todas las opciones, recomiendo ver la documentación de la función [`p.adjust`](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/p.adjust)). En este caso definí que quiero hacer una corrección de "`holm`", que se refiere a la corrección de *Holm-Bonferroni* [@holmSimpleSequentiallyRejective1979a].
 3.  `nsim`: número de simulaciones hechas para determinar el poder; acá es importante tener en cuenta que un número mayor de simulaciones me dará resultados más robustos y confiables, pero requerirá más tiempo. Los autores del paquete recomiendan usar mínimo 100 simulaciones [@lakensIntroductionSuperpower2020].
-4.  `seed` (opcional): Adicionalmente, para el siguiente ejemplo usé el argumento `seed` para que las simulaciones den siempre el mismo resultado[^24].
+4.  `seed` (opcional): Adicionalmente, para el siguiente ejemplo usé el argumento `seed` para que las simulaciones den siempre el mismo resultado[^25].
 
-[^24]: Dado que las bases de datos se simulan con base en las características definidas con la función `ANOVA_design`, pero **de manera aleatoria**, cada vez que corra la función obtendré un resultado ligeramente distinto, especialmente si el número de simulaciones (`nsim`) es pequeño. Al darle una semilla (`seed`), que puede ser cualquier número, los datos simulados siempre serán los mismos, garantizando que la respuesta sea la misma.
+[^25]: Dado que las bases de datos se simulan con base en las características definidas con la función `ANOVA_design`, pero **de manera aleatoria**, cada vez que corra la función obtendré un resultado ligeramente distinto, especialmente si el número de simulaciones (`nsim`) es pequeño. Al darle una semilla (`seed`), que puede ser cualquier número, los datos simulados siempre serán los mismos, garantizando que la respuesta sea la misma.
 
 El código entonces quedaría de la siguiente manera:
 
@@ -746,44 +873,52 @@ ANOVA_power(disenoB,
 
 Lo que produce:
 
-```{r echo = FALSE}
+```{r cache = TRUE, echo = FALSE}
 ANOVA_power(disenoB, 
             alpha_level = 0.05,
             p_adjust = "none", 
             seed = 2019, 
-            nsims = 100)
+            nsims = 1000,
+            verbose = FALSE)
 ```
 
-Este es un resultado muy interesante y completo, que incluye dos tablas; primero, una denominada `"Power and Effect sizes for ANOVA tests"` para los efectos principales e interacciones del ANOVA. Y segundo, una tabla denominada `"Power and Effect sizes for pairwise comparisons (t-tests)"` que muestra las comparaciones entre niveles de mis factores[^25] (por ejemplo, la comparación entre estudiantes becados de universidad pública y estudiantes becados de universidad privada). Ambas tablas tienen columnas que muestran:
+Este es un resultado muy interesante y completo, que incluye dos tablas; primero, una denominada `"Power and Effect sizes for ANOVA tests"` para los efectos principales e interacciones del ANOVA. Y segundo, una tabla denominada `"Power and Effect sizes for pairwise comparisons (t-tests)"` que muestra las comparaciones entre niveles de mis factores[^26] (por ejemplo, la comparación entre estudiantes becados de universidad pública y estudiantes becados de universidad privada). Ambas tablas tienen columnas que muestran:
 
-[^25]: Ver sección [7.3 Acerca de comparaciones post-hoc](#multcomp).
+[^26]: Ver sección [7.3 Acerca de comparaciones post-hoc](#multcomp).
 
 1.  El poder estadístico obtenido con el tamaño de muestra propuesto, bajo la columna denominada `power`.
 2.  El tamaño del efecto para cada efecto principal o interacción (primera tabla), o para cada comparación *post-hoc* (segunda tabla), bajo la columna denominada `effect_size`.
 
-Por ejemplo, en la primera tabla, bajo el título `"Power and Effect sizes for ANOVA tests"`, el resultado muestra que con el *n* y características propuestas, este estudio tendría un poder estadístico de 100%[^26] (o 1) para detectar el efecto principal de *Beca*, si es que este existe (es decir, una diferencia en las calificaciones del examen entre becados y no becados), cuyo tamaño del efecto se calculó en $\eta_p^2$ = 0.116942. Así mismo, un poder de 0.22 (o 22%), que es muy bajo, para detectar el efecto principal del tipo de universidad (*Universidad*: Pública, Privada), pues el efecto es sumamente pequeño, y se estimó en $\eta_p^2$ = 0.007245. Y, finalmente, un poder de 0.99 (99%) para detectar la interacción entre *Beca* y *Universidad*, pues el efecto es muy grande ($\eta_p^2$ = 0.050779).
+Por ejemplo, en la primera tabla, bajo el título `"Power and Effect sizes for ANOVA tests"`, el resultado muestra que con el *n* y características propuestas, este estudio tendría un poder estadístico de 100%[^27] (o 1) para detectar el efecto principal de *Beca*, si es que este existe (es decir, una diferencia en las calificaciones del examen entre becados y no becados), cuyo tamaño del efecto se calculó en $\eta_p^2$ = 0.116942. Así mismo, un poder de 0.22 (o 22%), que es muy bajo, para detectar el efecto principal del tipo de universidad (*Universidad*: Pública, Privada), pues el efecto es sumamente pequeño, y se estimó en $\eta_p^2$ = 0.007245. Y, finalmente, un poder de 0.99 (99%) para detectar la interacción entre *Beca* y *Universidad*, pues el efecto es muy grande ($\eta_p^2$ = 0.050779).
 
-[^26]: En realidad, el poder no puede llegar a ser 100%, pero se puede aproximar infinitamente.
+[^27]: En realidad, el poder no puede llegar a ser 100%, pero se puede aproximar infinitamente.
 
 \textcolor{red}{\faBookmark} **Es importante tener en cuenta que, a diferencia de `pwr`, que usa como medida del tamaño del efecto** $f$ de Cohen, el tamaño del efecto para ANOVAs usado por el paquete `Superpower` para efectos principales e interacciones es $\eta_p^2$ (eta parcial al cuadrado), en línea con lo recomendado por Correll et al. [-@correllAvoidCohenSmall2020].
 
-Adicionalmente, diseños tipo ANOVA, bien sean de una vía o factoriales[^27], con frecuencia requieren de pruebas *post-hoc* o contrastes planeados, para comparar niveles específicos de los factores.
+Adicionalmente, diseños tipo ANOVA, bien sean de una vía o factoriales[^28], con frecuencia requieren de pruebas *post-hoc* o contrastes planeados, para comparar niveles específicos de los factores.
 
-[^27]: Por supuesto, en el paquete `Superpower` se pueden hacer análisis de poder estadísticos para ANOVAs de una vía y, a diferencia de los análisis del paquete `pwr`, permiten estimar efectos para todas las comparaciones *post-hoc* en un solo análisis, sin pasos adicionales.
+[^28]: Por supuesto, en el paquete `Superpower` se pueden hacer análisis de poder estadísticos para ANOVAs de una vía y, a diferencia de los análisis del paquete `pwr`, permiten estimar efectos para todas las comparaciones *post-hoc* en un solo análisis, sin pasos adicionales.
 
-Por esto, en la segunda tabla, el resultado muestra la información relevante para cada comparación *post-hoc* (prueba-*t*) que se podría realizar, bajo el título `"Power and Effect sizes for pairwise comparisons (t-tests)"`, con la corrección deseada [en este caso, usando la corrección de *Holm-Bonferroni*; ver @holmSimpleSequentiallyRejective1979a]. Acá también muestra tanto el poder (`power`), como el tamaño del efecto (`effect_size`[^28]). Por ejemplo, nos muestra que el tamaño del efecto (diferencia) entre becados de universidad pública y becados de universidad privada, tiene un tamaño de *d* = 0.3247, y que con la muestra planteada de 80 participantes en cada combinación de *Beca* y *Universidad* (320 en total), tendríamos un poder $1-\beta$ de 0.49 (49%).
+Por esto, en la segunda tabla, el resultado muestra la información relevante para cada comparación *post-hoc* (prueba-*t*) que se podría realizar, bajo el título `"Power and Effect sizes for pairwise comparisons (t-tests)"`, con la corrección deseada [en este caso, usando la corrección de *Holm-Bonferroni*; ver @holmSimpleSequentiallyRejective1979a]. Acá también muestra tanto el poder (`power`), como el tamaño del efecto (`effect_size`[^29]). Por ejemplo, nos muestra que el tamaño del efecto (diferencia) entre becados de universidad pública y becados de universidad privada, tiene un tamaño de *d* = 0.3247, y que con la muestra planteada de 80 participantes en cada combinación de *Beca* y *Universidad* (320 en total), tendríamos un poder $1-\beta$ de 0.49 (49%).
 
-[^28]: Dado que estas comparaciones *post-hoc* serían típicamente analizadas con pruebas-*t*, el tamaño del efecto es *d* de Cohen.
+[^29]: Dado que estas comparaciones *post-hoc* serían típicamente analizadas con pruebas-*t*, el tamaño del efecto es *d* de Cohen.
 
-Finalmente, para ver gráficamente el poder estadístico a diferentes tamaños de muestra, puedo usar la función `plot_power`[^29] (**Figura 8**), definiendo tanto el *n* mínimo (`min_n`) y el *n* máximo (`max_n`) que deseo incluir en mi figura:
+Finalmente, para ver gráficamente el poder estadístico a diferentes tamaños de muestra, puedo usar la función `plot_power`[^30] (**Figura 9**), definiendo tanto el *n* mínimo (`min_n`) y el *n* máximo (`max_n`) que deseo incluir en mi figura:
 
-[^29]: Como sucedía con la función `plot` del paquete `pwr`, las figuras que produce la función `plot_power` del paquete `Superpower`, son objetos de clase `ggplot`, por lo que alguien familiarizado con el paquete [`ggplot2`](https://ggplot2.tidyverse.org/) puede modificar la figura para que, por ejemplo, los ejes, título y anotaciones estén en español, o para cambiar el tema y colores.
+[^30]: Como sucedía con la función `plot` del paquete `pwr`, las figuras que produce la función `plot_power` del paquete `Superpower`, son objetos de clase `ggplot`, por lo que alguien familiarizado con el paquete [`ggplot2`](https://ggplot2.tidyverse.org/) puede modificar la figura para que, por ejemplo, los ejes, título y anotaciones estén en español, o para cambiar el tema y colores.
 
-```{r warning = FALSE, fig8, fig.cap="**Figura 8.** Ejemplo de la asociación entre el tamaño de la muestra y el poder estadístico para un ANOVA 2 $\\times$ 2, producida con la función `plot_power` del paquete `Superpower`. Como se puede ver, el poder obtenido según el tamaño de la muestra es diferente para cada efecto principal o interacción, pues el tamaño del efecto es diferente en cada caso, por lo que se requeriría un *n* diferente para alcanzar el mismo poder estadístico. En este ejemplo, un poder $1-\\beta$ de 0.9 (90%) se alcanza para el efecto principal de la *Beca* (**panel superior**) con una muestra de apenas unos 24 participantes en cada combinación de *Beca* y *Universidad* (96 en total), mientras que ese mismo poder para detectar un efecto principal del tipo de *Universidad* (**panel intermedio**) no se logra ni siquiera con 250 participantes (1000 en total) por cada combinación de *Beca* y *Universidad* (de hecho, solo se logra al tener cerda de 600 participantes por condición, ¡o unos 2400 en total!). La interacción entre *Beca y Universidad* (**panel inferior**), logra un poder de 0.9 (90%) con unos 50 participantes (200 en total) por cada combinación de *Beca* y *Universidad*."}
+```{r eval = FALSE}
+plot_power(disenoB, 
+           min_n = 10, max_n = 250, 
+           plot = TRUE)
+```
+
+```{r echo = FALSE, cache = TRUE, warning = FALSE, fig9, fig.cap="**Figura 9.** Ejemplo de la asociación entre el tamaño de la muestra y el poder estadístico para un ANOVA 2 $\\times$ 2, producida con la función `plot_power` del paquete `Superpower`. Como se puede ver, el poder obtenido según el tamaño de la muestra es diferente para cada efecto principal o interacción, pues el tamaño del efecto es diferente en cada caso, por lo que se requeriría un *n* diferente para alcanzar el mismo poder estadístico. En este ejemplo, un poder $1-\\beta$ de 0.9 (90%) se alcanza para el efecto principal de la *Beca* (**panel superior**) con una muestra de apenas unos 24 participantes en cada combinación de *Beca* y *Universidad* (96 en total), mientras que ese mismo poder para detectar un efecto principal del tipo de *Universidad* (**panel intermedio**) no se logra ni siquiera con 250 participantes (1000 en total) por cada combinación de *Beca* y *Universidad* (de hecho, solo se logra al tener cerda de 600 participantes por condición, ¡o unos 2400 en total!). La interacción entre *Beca y Universidad* (**panel inferior**), logra un poder de 0.9 (90%) con unos 50 participantes (200 en total) por cada combinación de *Beca* y *Universidad*."}
 plot_power(disenoB, 
            min_n = 10, 
            max_n = 250, 
-           plot = TRUE)
+           plot = TRUE,
+           verbose = FALSE)
 ```
 
 ## ANOVA factorial de medidas repetidas
@@ -794,7 +929,7 @@ Sin embargo, hay una diferencia importante: dado que tendremos factores de medid
 
 El orden para ingresar estos coeficientes de correlación (*r* de Pearson), debe seguir un criterio específico. Este orden, que debe ser respetado, es equivalente al "*triángulo superior*" (resaltado en \colorbox{yellow}{\textbf{amarillo}}) de una matriz de correlaciones (**Tabla 4**).
 
-```{r tab4, echo = FALSE}
+```{r cache = TRUE, tab4, echo = FALSE}
 colnames <- c("A1 - B1",
               "A1 - B2",
               "A2 - B1",
@@ -862,7 +997,7 @@ En este caso, la ansiedad de cada participante sería medida cuatro veces, tras 
 
 Lo importante es entonces especificar las correlaciones entre estas condiciones. Para esto, lo mejor es hacer una matriz de correlaciones (**Tabla 5**).
 
-```{r tab5, echo = FALSE}
+```{r cache = TRUE, tab5, echo = FALSE}
 colnames <- c("Cafeína Sí; \n Día laboral Sí",
               "Cafeína Sí; \n Día laboral No",
               "Cafeína No; \n Día laboral Sí",
@@ -930,13 +1065,12 @@ Teniendo esto en cuenta, podemos especificar este diseño en la función `ANOVA_
     -   Etiqueta del segundo factor (en este caso "Día\_laboral", pues estos nombres NO pueden tener espacios).
     -   Etiquetas de los niveles de ese factor (en este caso "Sí" y "No").
 
-En este caso, el diseño lo *guardaré* como un objeto llamado `disenoW`, y usé la opción `plot = TRUE` para asegurarme de que las medias fueron *concatenadas* en el orden correcto (**Figura 9**).
+En este caso, el diseño lo *guardaré* como un objeto llamado `disenoW`, y usé la opción `plot = TRUE` para asegurarme de que las medias fueron *concatenadas* en el orden correcto (**Figura 10**).
 
-```{r fig9, fig.height = 3.4, fig.cap = "**Figura 9.** Ejemplo de la distribución de medias marginales estimadas y sus intervalos de confianza para el diseño definido con la función `ANOVA_design`, al incluir el argumento `plot = TRUE`. Esto es muy útil para estar seguro de que las medias fueron *concatenadas* en el orden correcto."}
+```{r cache = TRUE, fig10, fig.height = 3.4, fig.cap = "**Figura 10.** Ejemplo de la distribución de medias marginales estimadas y sus intervalos de confianza para el diseño definido con la función `ANOVA_design`, al incluir el argumento `plot = TRUE`. Esto es muy útil para estar seguro de que las medias fueron *concatenadas* en el orden correcto."}
 disenoW <- ANOVA_design(design = "2w*2w",
-                        n = 100, 
+                        n = 100, sd = 3.5, 
                         mu = c(25.1, 21.2, 26.3, 24.2), 
-                        sd = 3.5, 
                         r <- c(0.384, 0.287, 0.302, 0.204, 0.402, 0.184),
                         labelnames = c("Cafeína", "Sí", "No", "Día_laboral", "Sí", "No"),
                         plot = TRUE)
@@ -950,7 +1084,7 @@ disenoW$cor_mat
 
 Una vez definido el diseño y las características de los datos (*"guardando"* este diseño en un objeto que llamé `disenoW`), puedo ver el poder que obtendría con esos 100 participantes por cada combinación de *Cafeína* y *Día laboral*, con la función `ANOVA_power`, de la misma manera que lo haría para un diseño de medidas independientes.
 
-```{r}
+```{r eval = FALSE}
 ANOVA_power(disenoW,
             alpha_level = 0.05,
             p_adjust = "holm",
@@ -958,17 +1092,34 @@ ANOVA_power(disenoW,
             nsims = 1000)
 ```
 
+```{r cache = TRUE, echo = FALSE}
+ANOVA_power(disenoW,
+            alpha_level = 0.05,
+            p_adjust = "holm",
+            seed = 1685,
+            nsims = 1000,
+            verbose = FALSE)
+```
+
 Como se puede ver, el poder estadístico para detectar posibles efectos de *Cafeína* ($1-\beta$ = 100%), *Día laboral* ($1-\beta$ = 100%), y la interacción *Cafeína* $\times$ Día laboral ($1-\beta$ = 89.9%), es más que suficiente con 100 participantes por condición (y casi el nivel deseado para la interacción), pues los tamaños del efecto estimado, son relativamente grandes ( $\eta_p^2$ = 0.3469, 0.4795, y 0.1029, respectivamente).
 
 Del mismo modo, un *n* de 100 participantes por condición, da un poder suficiente ($1-\beta$ \> 0.9) para detectar casi todas las diferencias según fueron estimadas, excepto: (1) la diferencia, tal cual fue estimada, entre los niveles de ansiedad tras tomar café con cafeína vs café descafeinado en un día laboral ($1-\beta$ = 76.1%); y (2), la diferencia entre los niveles de ansiedad tras tomar café con cafeína en un día laboral, vs café descafeinado en un día no laboral ($1-\beta$ = 55%), que por supuesto tienen los tamaños de efecto más pequeños (más cercanos a 0), independientemente de su dirección (*d* = 0.2875, y -0.2210, respectivamente).
 
-Sin embargo, para estimar el tamaño de muestra suficiente, puedo como antes usar la función `plot_power` (**Figura 10**), definiendo tanto el n mínimo (`min_n`) y el n máximo (`max_n`) que deseo incluir en mi figura:
+Sin embargo, para estimar el tamaño de muestra suficiente, puedo como antes usar la función `plot_power` (**Figura 11**), definiendo tanto el n mínimo (`min_n`) y el n máximo (`max_n`) que deseo incluir en mi figura:
 
-```{r warning = FALSE, fig10, fig.cap="**Figura 10.** Ejemplo de la asociación entre el tamaño de la muestra y el poder estadístico para un ANOVA 2 $\\times$ 2, producida con la función `plot_power` del paquete `Superpower`. Como se puede ver, el poder obtenido según el tamaño de la muestra es diferente para cada efecto principal o interacción, pues el tamaño del efecto es diferente en cada caso, por lo que se requeriría un *n* diferente para alcanzar el mismo poder estadístico. En este ejemplo, un poder $1-\\beta$ de 0.9 (90%) se alcanza para el efecto principal de la *Cafeína* (**panel superior**) con una muestra de apenas unos 20 participantes, mientras que ese mismo poder para detectar un efecto principal del tipo de *Día laboral* (**panel intermedio**) se logra con alrededor  de 13 participantes, y la interacción entre *Cafeína y Día laboral* (**panel inferior**), logra un poder de 0.9 (90%) con unos 100 participantes. Si mi interés principal es la interacción entre estas variables, debo entonces usar una muestra de unos 100 participantes, a los cuales se les medirá la ansiedad en las cuatro condiciones en cada condición."}
+```{r eval = FALSE}
 plot_power(disenoW, 
            min_n = 5, 
            max_n = 100, 
            plot = TRUE)
+```
+
+```{r echo = FALSE, cache = TRUE, warning = FALSE, fig11, fig.cap="**Figura 11.** Ejemplo de la asociación entre el tamaño de la muestra y el poder estadístico para un ANOVA 2 $\\times$ 2, producida con la función `plot_power` del paquete `Superpower`. Como se puede ver, el poder obtenido según el tamaño de la muestra es diferente para cada efecto principal o interacción, pues el tamaño del efecto es diferente en cada caso, por lo que se requeriría un *n* diferente para alcanzar el mismo poder estadístico. En este ejemplo, un poder $1-\\beta$ de 0.9 (90%) se alcanza para el efecto principal de la *Cafeína* (**panel superior**) con una muestra de apenas unos 20 participantes, mientras que ese mismo poder para detectar un efecto principal del tipo de *Día laboral* (**panel intermedio**) se logra con alrededor  de 13 participantes, y la interacción entre *Cafeína y Día laboral* (**panel inferior**), logra un poder de 0.9 (90%) con unos 100 participantes. Si mi interés principal es la interacción entre estas variables, debo entonces usar una muestra de unos 100 participantes, a los cuales se les medirá la ansiedad en las cuatro condiciones en cada condición."}
+plot_power(disenoW, 
+           min_n = 5, 
+           max_n = 100, 
+           plot = TRUE,
+           verbose = FALSE)
 ```
 
 ## ANOVA factorial mixto
@@ -979,15 +1130,15 @@ Básicamente, un diseño mixto es cuando tenemos factores (variables independien
 
 Las diferencias son que, al especificar el diseño con la función `ANOVA_design` (argumento `design`), se debe especificar que hay niveles intra-sujetos (de medidas repetidas, que en el paquete se designado como **w**, del inglés *within-subjects*) y entre-sujetos (medidas independientes, **b**, del inglés *between-subjects*).
 
-Adicionalmente, tenemos que especificar la correlación entre los niveles de factores intra-sujeto (tal cual como lo hicimos para diseños de medidas repetidas), pero no para factores de medidas independientes, pues en este caso se asume siempre que la correlación es 0[^30]. De este modo, el número de coeficientes de correlación que debemos especificar (en el argumento `r` de la función `ANOVA_design`) es menor al de diseños equivalentes de medidas repetidas.
+Adicionalmente, tenemos que especificar la correlación entre los niveles de factores intra-sujeto (tal cual como lo hicimos para diseños de medidas repetidas), pero no para factores de medidas independientes, pues en este caso se asume siempre que la correlación es 0[^31]. De este modo, el número de coeficientes de correlación que debemos especificar (en el argumento `r` de la función `ANOVA_design`) es menor al de diseños equivalentes de medidas repetidas.
 
-[^30]: Por esto al hacer análisis de medidas independientes no se especifica ninguna correlación.
+[^31]: Por esto al hacer análisis de medidas independientes no se especifica ninguna correlación.
 
 ### Ejemplo ANOVA factorial mixto (2 $\times$ 2)
 
-Por ejemplo, si quisiera medir qué tanto un ruido insoportable (por ejemplo, el sonido de la *fresa* de un odontólogo afecta el desempeño de jugadores aficionados de ajedrez[^31], en términos de partidas ganadas sobre un total de 20 partidas jugadas, y quisiera saber si este efecto es diferente en personas según si son odontólogos o no, tendría un diseño mixto 2 $\times$ 2, pues mis factores serían:
+Por ejemplo, si quisiera medir qué tanto un ruido insoportable (por ejemplo, el sonido de la *fresa* de un odontólogo afecta el desempeño de jugadores aficionados de ajedrez[^32], en términos de partidas ganadas sobre un total de 20 partidas jugadas, y quisiera saber si este efecto es diferente en personas según si son odontólogos o no, tendría un diseño mixto 2 $\times$ 2, pues mis factores serían:
 
-[^31]: Es solamente un ejemplo. Jamás pensaría en torturar a jugadores de ajedrez, ni a nadie, sometiéndolo a semejante tortura solo por curiosidad "científica".
+[^32]: Es solamente un ejemplo. Jamás pensaría en torturar a jugadores de ajedrez, ni a nadie, sometiéndolo a semejante tortura solo por curiosidad "científica".
 
 1.  Factor 1 (medidas independientes): Profesión (Odontólogo, Otro)
 2.  Factor 2 (medidas repetidas): Ruido (NO, Sí)
@@ -998,11 +1149,11 @@ Como siempre, con la información clara, puedo definir los argumentos del diseñ
 
 En este caso, el diseño lo *"guardaré"* como un objeto llamado `disenoM`, y usé la opción `plot = TRUE` para asegurarme de que las medias fueron concatenadas en el orden correcto.
 
-Como se puede ver en el código a continuación, y en la **Figura 11**, según mis datos (inventados), tanto odontólogos como no odontólogos ganan en promedio cerca de 12 partidas de 20 jugadas ($\approx$ 60%), cuando las juegan sin ruido (en morado), pero el desempeño de personas con profesiones distintas a la odontología se ve muy afectado al jugar las partidas en presencia del ruido.
+Como se puede ver en el código a continuación, y en la **Figura 12**, según mis datos (inventados), tanto odontólogos como no odontólogos ganan en promedio cerca de 12 partidas de 20 jugadas ($\approx$ 60%), cuando las juegan sin ruido (en morado), pero el desempeño de personas con profesiones distintas a la odontología se ve muy afectado al jugar las partidas en presencia del ruido.
 
 Dado que no sería fácil conseguir voluntarios para someterse a jugar, en total, 40 partidas de ajedrez, de las cuales 20 se jugarían con un ruido insoportable, pero que también espero un tamaño de efecto grande, voy a hacer el cálculo solo con 10 participantes por grupo (10 odontólogos, 10 no odontólogos).
 
-```{r fig11, fig.height = 4,fig.cap = "**Figura 11.** Ejemplo de la distribución de medias marginales estimadas y sus intervalos de confianza para el diseño definido con la función `ANOVA_design`, al incluir el argumento `plot = TRUE`. Esto es muy útil para estar seguro de que las medias fueron *concatenadas* en el orden correcto."}
+```{r cache = TRUE, fig12, fig.height = 4,fig.cap = "**Figura 12.** Ejemplo de la distribución de medias marginales estimadas y sus intervalos de confianza para el diseño definido con la función `ANOVA_design`, al incluir el argumento `plot = TRUE`. Esto es muy útil para estar seguro de que las medias fueron *concatenadas* en el orden correcto."}
 disenoM <- ANOVA_design(design = "2b*2w",
                         n = 10, 
                         mu = c(13, 12, 14, 6),
@@ -1020,7 +1171,7 @@ disenoM$cor_mat
 
 Definido el diseño y las características de los datos (que *"guardé"* en un objeto que llamé `disenoM`), puedo ver el poder que obtendría con esos 10 participantes por grupo, con la función `ANOVA_power`, de la misma manera que lo haría para diseños de medidas independientes o repetidas.
 
-```{r}
+```{r eval = FALSE}
 ANOVA_power(disenoM,
             alpha_level = 0.05,
             p_adjust = "holm",
@@ -1028,17 +1179,34 @@ ANOVA_power(disenoM,
             nsims = 1000)
 ```
 
+```{r cache = TRUE, echo = FALSE}
+ANOVA_power(disenoM,
+            alpha_level = 0.05,
+            p_adjust = "holm",
+            seed = 1985,
+            nsims = 1000,
+            verbose = FALSE)
+```
+
 Como se puede ver, el poder estadístico para detectar posibles efectos de *Profesión* ($1-\beta$ = 57.2%) es algo bajo con solo 10 participantes por grupo, mientras que el poder para detectar un efecto de la condición de *Ruido* ($1-\beta$ = 100%), y la interacción *Profesión* × *Ruido* ($1-\beta$ = 97.2%), es más que suficiente. Esto se da porque los tamaños de efecto son bastante grandes ($\eta_p^2$ = 0.2368, 0.6248, y 0.5070, respectivamente), por lo cual nunca será necesaria una muestra demasiado grande (ni siquiera en el caso de la *Profesión*, como lo sugiere el hecho de que con apenas 10 participantes por grupo se obtenga un poder no muy lejano al deseado).
 
 El poder para detectar comparaciones *post-hoc* es, sin embargo, muy bajo en varios casos. Solamente al comparar a los no odontólogos jugando con ruido vs odontólogos jugando con o sin ruido, o esos mismo no odontólogos jugando sin ruido, se logra un poder suficiente (lo que no es una sorpresa si se tienen en cuenta las medias esperadas; **Figura 11**).
 
-Sin embargo, para estimar el tamaño de muestra suficiente, puedo como antes usar la función `plot_power` (**Figura 10**), definiendo tanto el *n* mínimo (`min_n`) y el *n* máximo (`max_n`) que deseo incluir en mi figura:
+Sin embargo, para estimar el tamaño de muestra suficiente, puedo como antes usar la función `plot_power` (**Figura 13**), definiendo tanto el *n* mínimo (`min_n`) y el *n* máximo (`max_n`) que deseo incluir en mi figura:
 
-```{r warning = FALSE, fig12, fig.cap="**Figura 12.** Ejemplo de la asociación entre el tamaño de la muestra y el poder estadístico para un ANOVA 2 $\\times$ 2 mixto, producida con la función `plot_power` del paquete `Superpower`. Como se puede ver, el poder obtenido según el tamaño de la muestra es diferente para cada efecto principal o interacción, pues el tamaño del efecto es diferente en cada caso, por lo que se requeriría un *n* diferente para alcanzar el mismo poder estadístico. En este ejemplo, un poder $1-\\beta$ de 0.9 (90%) se alcanza para el efecto principal de la *Profesión* (**panel superior**) con una muestra de apenas unos 18 participantes por grupo, mientras que ese mismo poder para detectar un efecto principal del tipo de *Ruido* (**panel intermedio**) se logra con al apenas unos 8 participantes por grupo, y la interacción entre *Profesión y Ruido* (**panel inferior**), logra un poder de 0.9 (90%) con unos 6 participantes por grupo. Si me interesan tanto los efectos principales como la interacción entre estas variables, debo entonces usar una muestra de unos 18 participantes por grupo (18 odontólogos y 18 no odontólogos, para un total de 36 participantes), a los cuales se les medirá el número de partidas de ajedrez ganadas de 20 jugadas, en las dos condiciones de ruido."}
+```{r eval = FALSE}
 plot_power(disenoM,
            min_n = 1,
            max_n = 30,
            plot = TRUE)
+```
+
+```{r echo = FALSE, cache = TRUE, warning = FALSE, fig13, fig.cap="**Figura 13.** Ejemplo de la asociación entre el tamaño de la muestra y el poder estadístico para un ANOVA 2 $\\times$ 2 mixto, producida con la función `plot_power` del paquete `Superpower`. Como se puede ver, el poder obtenido según el tamaño de la muestra es diferente para cada efecto principal o interacción, pues el tamaño del efecto es diferente en cada caso, por lo que se requeriría un *n* diferente para alcanzar el mismo poder estadístico. En este ejemplo, un poder $1-\\beta$ de 0.9 (90%) se alcanza para el efecto principal de la *Profesión* (**panel superior**) con una muestra de apenas unos 18 participantes por grupo, mientras que ese mismo poder para detectar un efecto principal del tipo de *Ruido* (**panel intermedio**) se logra con al apenas unos 8 participantes por grupo, y la interacción entre *Profesión y Ruido* (**panel inferior**), logra un poder de 0.9 (90%) con unos 6 participantes por grupo. Si me interesan tanto los efectos principales como la interacción entre estas variables, debo entonces usar una muestra de unos 18 participantes por grupo (18 odontólogos y 18 no odontólogos, para un total de 36 participantes), a los cuales se les medirá el número de partidas de ajedrez ganadas de 20 jugadas, en las dos condiciones de ruido."}
+plot_power(disenoM,
+           min_n = 1,
+           max_n = 30,
+           plot = TRUE,
+           verbose = FALSE)
 ```
 
 ## Extra: Cómo estima `Superpower` el poder estadístico con base en simulaciones de bases de datos
@@ -1055,7 +1223,7 @@ Si yo *"guardo"* cualquier análisis de poder con base en simulaciones creado co
 
 Por ejemplo, si *"guardo"* una de las simulaciones hechas (en este caso, usaré la simulación creada para el ANOVA factorial mixto), en un objeto, que ahora llamaré `simM`:
 
-```{r}
+```{r cache = TRUE}
 simM <- ANOVA_power(disenoM,
                     alpha_level = 0.05,
                     p_adjust = "holm",
@@ -1063,7 +1231,7 @@ simM <- ANOVA_power(disenoM,
                     nsims = 1000)
 ```
 
-Puedo ver a distribución de los valores *p* para efectos principales e interacciones (**Figura 13**) con el comando:
+Puedo ver a distribución de los valores *p* para efectos principales e interacciones (**Figura 14**) con el comando:
 
 ```{r eval = FALSE}
 simM$plot1
@@ -1071,7 +1239,7 @@ simM$plot1
 
 Que produce:
 
-```{r echo = FALSE, fig.cap = "**Figura 13.** Ejemplo de distribución (histograma) de valores *p* para efectos principales e interacciones, producto de 1000 simulaciones hechas con la función `ANOVA_power` del paquete `Superpower`. La línea roja determina el nivel de significación estadística ($\\alpha$) definido (en este caso, el típico 0.05)."}
+```{r cache = TRUE, echo = FALSE, fig.cap = "**Figura 14.** Ejemplo de distribución (histograma) de valores *p* para efectos principales e interacciones, producto de 1000 simulaciones hechas con la función `ANOVA_power` del paquete `Superpower`. La línea roja determina el nivel de significación estadística ($\\alpha$) definido (en este caso, el típico 0.05)."}
 simM$plot1
 ```
 
@@ -1083,7 +1251,7 @@ simM$plot2
 
 Que produce:
 
-```{r echo = FALSE, fig.height = 8, fig.cap = "**Figura 14.** Ejemplo de distribución (histograma) de valores *p* para comparaciones *post-hoc*, producto de 1000 simulaciones hechas con la función `ANOVA_power` del paquete `Superpower`. Al contrario de las distribuciones de valores *p* para ejectos principales e interacciones (**Figura 13**), que tienen una tendencia clara, para comparaciones *post-hoc* como estas la distribución puede verse extraña (aparecen, de repente, muchos unos) para comparaciones de efectos de tamaño pequeño, y que por ende tienen bajo poder, dada la corrección solicitada de *Holm-Bonferroni*. La línea roja determina el nivel de significación estadística ($\\alpha$) definido (en este caso, el típico 0.05)."}
+```{r cache = TRUE, echo = FALSE, fig.height = 8, fig.cap = "**Figura 14.** Ejemplo de distribución (histograma) de valores *p* para comparaciones *post-hoc*, producto de 1000 simulaciones hechas con la función `ANOVA_power` del paquete `Superpower`. Al contrario de las distribuciones de valores *p* para ejectos principales e interacciones (**Figura 13**), que tienen una tendencia clara, para comparaciones *post-hoc* como estas la distribución puede verse extraña (aparecen, de repente, muchos unos) para comparaciones de efectos de tamaño pequeño, y que por ende tienen bajo poder, dada la corrección solicitada de *Holm-Bonferroni*. La línea roja determina el nivel de significación estadística ($\\alpha$) definido (en este caso, el típico 0.05)."}
 simM$plot2
 ```
 
